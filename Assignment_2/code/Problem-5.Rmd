@@ -1,0 +1,165 @@
+---
+output:
+  pdf_document: default
+---
+## Problem 5: Computational Finance - Modelling Stock prices
+
+Following piece of code download the prices of TCS since 2007
+
+```{r}
+library(quantmod)
+getSymbols('TCS.NS')
+tail(TCS.NS)
+```
+Plot the adjusted close prices of TCS
+```{r}
+plot(TCS.NS$TCS.NS.Adjusted)
+```
+
+**Download the data of market index Nifty50**. The Nifty 50 index indicates how the over all market has done over the similar period.
+```{r}
+getSymbols('^NSEI')
+tail(NSEI)
+```
+Plot the adjusted close value of Nifty50
+```{r}
+plot(NSEI$NSEI.Adjusted)
+```
+
+
+### Log-Return 
+We calculate the daily log-return, where log-return is defined as
+$$
+r_t=\log(P_t)-\log(P_{t-1})=\Delta \log(P_t),
+$$
+where $P_t$ is the closing price of the stock on $t^{th}$ day.
+
+```{r}
+TCS_rt = diff(log(TCS.NS$TCS.NS.Adjusted))
+Nifty_rt = diff(log(NSEI$NSEI.Adjusted))
+retrn = cbind.xts(TCS_rt,Nifty_rt) 
+retrn = na.omit(data.frame(retrn))
+
+plot(retrn$NSEI.Adjusted,retrn$TCS.NS.Adjusted
+     ,pch=20
+     ,xlab='Market Return'
+     ,ylab='TCS Return'
+     ,xlim=c(-0.18,0.18)
+     ,ylim=c(-0.18,0.18))
+grid(col='grey',lty=1)
+```
+
++ Consider the following model:
+
+$$
+r_{t}^{TCS}=\alpha + \beta r_{t}^{Nifty} + \varepsilon,
+$$
+where $\mathbb{E}(\varepsilon)=0$ and $\mathbb{V}ar(\varepsilon)=\sigma^2$.
+
+1. Estimate the parameters of the models $\theta=(\alpha,\beta,\sigma)$ using the method of moments type plug-in estimator discussed in the class.
+
+## Solution:
+```{r}
+mu_y = mean(retrn$TCS.NS.Adjusted)
+mu_x = mean(retrn$NSEI.Adjusted)
+sigma_y = sd(retrn$TCS.NS.Adjusted)
+sigma_x = sd(retrn$NSEI.Adjusted)
+rho = cor(retrn$NSEI.Adjusted, retrn$TCS.NS.Adjusted)
+
+alpha_0 = mu_y - rho * mu_x * (sigma_x/sigma_y)
+beta_0 = rho *  (sigma_x/sigma_y)
+
+retrn_mom = retrn
+retrn_mom$mom_est_TCS.NS.Adjusted = alpha_0 + beta_0 * retrn_mom$NSEI.Adjusted
+
+epsilon = retrn_mom$TCS.NS.Adjusted-retrn_mom$mom_est_TCS.NS.Adjusted
+sigma_0 = sd(epsilon)
+
+theta_0 = c(alpha_0, beta_0, sigma_0)
+
+print( theta_0)
+```
+
+2. Estimate the parameters using the `lm` built-in function of `R`. Note that `lm` using the OLS method.
+
+## Solution:
+```{r}
+lm_model = lm(TCS.NS.Adjusted~NSEI.Adjusted, data = retrn)
+
+co = lm_model$coefficients
+
+alpha_1 = matrix(co)[1,1]
+beta_1 = matrix(co)[2,1]
+sigma_1 = sd(lm_model$residuals)
+
+theta_1 = c(alpha_1, beta_1, sigma_1)
+
+print(theta_1)
+```
+
+
+3. Fill-up the following table
+
+Parameters | Method of Moments | OLS
+-----------|-------------------|-----
+$\alpha$   |                   |
+$\beta$    |                   |
+$\sigma$   |                   |
+
+## Solution:
+
+Parameters | Method of Moments | OLS
+-----------|-------------------|-----
+$\alpha$   |  $0.0005848199$   |$0.0004611208$
+$\beta$    |  $0.3904739457$   |$0.7436970826$
+$\sigma$   |  $0.0169171740$   |$0.0161865264$
+
+4. If the current value of Nifty is 18000 and it goes up to 18200. The current value of TCS is Rs. 3200/-. How much you can expect TCS price to go up?
+
+## Solution:
+
+```{r}
+prediction_mom = function(Nifty_initial_value, Nifty_final_value, TCS_initial_value){
+  beta = theta_0[2]
+  alpha = theta_0[1]
+  x = log(Nifty_final_value) - log(Nifty_initial_value)
+  y = alpha + beta*x
+  y1 = log(TCS_initial_value) + y
+  y2 = exp(y1)
+  return(y2)
+}
+
+prediction_ols = function(Nifty_initial_value, Nifty_final_value, TCS_initial_value){
+  beta = theta_1[2]
+  alpha = theta_1[1]
+  x = log(Nifty_final_value) - log(Nifty_initial_value)
+  y = alpha + beta*x
+  y1 = log(TCS_initial_value) + y
+  y2 = exp(y1)
+  return(y2)
+}
+```
+
+By the Method of Moments type method, we can say that we can expect TCS value to go up by
+```{r}
+Nifty_initial_value = 18000
+Nifty_final_value = 18200
+TCS_initial_value = 3200
+
+TCS_final_value = prediction_mom(Nifty_initial_value = Nifty_initial_value,
+                                 Nifty_final_value = Nifty_final_value,
+                                 TCS_initial_value = TCS_initial_value)
+
+TCS_final_value - TCS_initial_value
+```
+
+By the OLS method, we can say that we can expect TCS value to go up by
+```{r}
+TCS_final_value = prediction_ols(Nifty_initial_value = Nifty_initial_value,
+                                 Nifty_final_value = Nifty_final_value,
+                                 TCS_initial_value = TCS_initial_value)
+
+TCS_final_value - TCS_initial_value
+```
+
+Thus we can expect TCS price to go up by some value around Rs. 15.72 and Rs. 27.89.
