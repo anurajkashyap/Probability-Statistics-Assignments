@@ -1,0 +1,200 @@
+---
+title: "PBSR ASSig.2 Q.1"
+date: "2022-11-14"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1
+
+Suppose $X$ denote the number of goals scored by home team in premier league. We can assume $X$ is a random variable. Then we have to build the probability distribution to model the probability of number of goals. Since $X$ takes value in $\mathbb{N}=\{0,1,2,\cdots\}$, we can consider the geometric progression sequence as possible candidate model, i.e.,
+$$
+S=\{a,ar,ar^2,ar^{3},\cdots\}.
+$$
+But we have to be careful and put proper conditions in place and modify $S$ in such a way so that it becomes proper probability distributions. 
+
+#### 1. Figure out the necesary conditions and define the probability distribution model using $S$.
+
+#### Answer: 
+
+In order to define the probability distribution model using $S$, following necessary conditions must be       satisfied.
+\begin{enumerate}
+\item $0 \leq P(X = i) \leq 1, \forall~ i$.
+\item $\Sigma_{i = 0}^{\infty} P(X = i) = 1$.
+\end{enumerate}
+
+According to the given model $P(X = i) = ar^{i}$.
+
+Therefore,
+$$0 \leq a \leq 1 ~~~ \& ~~~ 0\leq r < 1$$
+Now,
+$$
+\Sigma_{i = 0}^{\infty} P(X = i) = 1 $$ 
+$$\implies \Sigma_{i = 0}^{\infty} ar^{i} = 1$$
+$$\implies r = 1 - a$$
+Therefore,
+$P(X = i) = a(1-a)^{i}$.
+
+
+#### 2.Check if mean and variance exists for the probability model.
+#### Answer:
+
+$E(X) = \Sigma_{i = 0}^{\infty} iP(X = i) =\Sigma_{i = 0}^{\infty} a(1-a)^{i} = \frac{1-a}{a}$.
+
+Therefore, mean = $E(x) = \frac{1-a}{a}$.
+
+variance = $Var(X) = \Sigma_{i = 0}^{\infty} (i-E(X))^{i} = \frac{1-a}{a^{2}}$.
+
+Therefore, Variance = $\frac{1-a}{a^{2}}$.
+
+Hence, mean and variance exists for the probability model.
+
+
+#### 3. Can you find the analytically expression of mean and variance.
+
+#### Answer: 
+ 
+ Yes, we can analytically find the expression of mean and variance as follows.
+ 
+ mean = $E(x) = \frac{1-a}{a}$.
+ 
+ Variance = $\frac{1-a}{a^{2}}$.
+ 
+### 4. 
+From historical data we found the following summary statistics
+
+\begin{table}[ht]
+\centering
+     \begin{tabular}{c|c|c|c}\hline
+     mean &  median & variance & total number of matches\\ \hline
+     1.5 & 1 & 2.25 & 380\\ \hline
+     \end{tabular}
+\end{table}
+
+Using the summary statistics and your newly defined probability distribution model find the following:
+
+#### a. What is the probability that home team will score at least one goal?
+#### b. What is the probability that home team will score at least one goal but less than four goal?
+
+#### Answer:
+
+According to given historical data,
+     
+$$mean = 1.5$$ 
+$$\implies \frac{1-a}{a} = 1.5$$
+$$ \implies a = 0.4 $$
+Therefore, $X \sim geom(0.4)$.
+
+#### a.
+
+probability that home team will score atleast one goal,
+
+ $= p(X\geq 1) = 1 - p(X = 0)$
+```{r}
+
+p = 1 - dgeom(0,0.4)
+print(p)
+
+```
+#### b.
+
+probability that home team will score at least one goal but less than four goal,
+
+$= p(1 \leq X < 4) =  p(X = 1) + p(X = 2) + p(X = 3)$
+
+```{r}
+p = dgeom(1,0.4) + dgeom(2,0.4) + dgeom(3,0.4)
+print(p)
+```
+
+#### 5. Suppose on another thought you want to model it with off-the shelf Poisson probability models. Under the assumption that underlying distribution is Poisson probability find the above probabilities, i.e.,
+#### a. What is the probability that home team will score at least one goal?
+#### b. What is the probability that home team will score at least one goal but less than four goal?
+
+#### Answer:
+
+Now, we want to model above distribution with poisson probability model. Assume that, the underlying distribution is poisson probability distribution.
+
+i.e Assume that, X~poisson($\lambda$),   where $\lambda$ = average number of goals = mean.
+
+According to summary statistics, mean = 1.5.
+
+$\implies \lambda = 1.5$.
+
+Thus, 
+$X \sim poisson(1.5)$
+
+#### a.
+probability that home team will score at least one goal,
+
+$= p(X\geq 1) = 1 - p(X = 0)$
+
+```{r}
+p = 1 - dpois(0,1.5)
+print(p)
+```
+#### b.
+probability that home team will score at least one goal but less than four goal,
+
+$= p(1 \leq X < 4) =  p(X = 1) + p(X = 2) + p(X = 3)$
+
+```{r}
+p = dpois(1,1.5) + dpois(2,1.5) + dpois(3,1.5)
+print(p)
+```
+
+
+#### 6. Which probability model you would prefer over another?
+
+#### Answer:
+
+I prefer the poisson model over the newly defined probability model for this given data.
+
+
+
+
+
+
+
+
+
+
+
+
+#### 7. Write down the likelihood functions of your newly defined probability models and Poisson models. Clearly mention all the assumptions that you are making.
+
+#### Answer:
+
+i) Likelihood function for newly defined probability model.
+
+Let $x_{1}, x_{2}, x_{3}, \cdots , x_{n}$ be a observed sample.
+
+Then the likelihood function is given by,
+\begin{align}
+f(x_{1}, x_{2}, x_{3}, \cdots , x_{n} | \hat{a}) &= f(x_{1}| \hat{a})f(x_{2}| \hat{a})f(x_{3}| \hat{a}) \cdots f(x_{n}| \hat{a}) \\
+&= \hat{a}(1-\hat{a})^{x_{1}}\hat{a}(1-\hat{a})^{x_{2}}\hat{a}(1-\hat{a})^{x_{3}}\cdots\hat{a}(1-\hat{a})^{x_{n}} \\ 
+&= \hat{a}^{n}(1-\hat{a})^{\Sigma_{i=1}^{\infty}x_{i}}
+\end{align}
+
+ii) Likelihood function for poisson model.
+
+Let $x_{1}, x_{2}, x_{3}, \cdots , x_{n}$ be a observed sample.
+
+Then the likelihood function is given by,
+\begin{align}
+f(x_{1}, x_{2}, x_{3}, \cdots , x_{n} | \hat{\lambda}) &= f(x_{1}| \hat{\lambda})f(x_{2}| \hat{\lambda})f(x_{3}| \hat{\lambda}) \cdots f(x_{n}| \hat{\lambda})\\
+&= \frac{e^{- \hat{\lambda}} \hat{\lambda}^{x_{1}}}{x_{1}!}\frac{e^{- \hat{\lambda}} \hat{\lambda}^{x_{2}}}{x_{2}!}\frac{e^{- \hat{\lambda}} \hat{\lambda}^{x_{3}}}{x_{3}!}\cdots\frac{e^{- \hat{\lambda}} \hat{\lambda}^{x_{n}}}{x_{n}!}\\
+&= \frac{e^{-n\hat{\lambda}} \hat{\lambda}^{\Sigma_{i=1}^{n}x_{i}}}{\Pi_{i = 1}^{n} x_{i}!}
+\end{align}
+
+
+#### Assumptions:
+
+\begin{itemize}
+\item Number of goals scored in a match is independent of the number of goals scored in every other match.
+\item Number of goals in every match is identically distributed.
+\item Assume that no other factors is affecting the number of goals scored in a match.
+\end{itemize}
