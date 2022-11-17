@@ -1,49 +1,418 @@
 ---
-title: "PBSR assgn2 Q2 and Q4"
-author: "Praveen Kumar"
-date: "2022-11-16"
-output:
-  pdf_document: default
-  html_document: default
+title: "**Probability and Statistics with R**"
+author: "**Assignment 2**"
+date: "Submission Nov 16-2022 (Wednesday)"
+output: pdf_document
 ---
 
-```{r setup, include=TRUE}
-knitr::opts_chunk$set(echo = TRUE)
 
-## Q2
-n=20
-sim=rgamma(n,shape=1.5,scale=2.2)
-data=sim
+## Problem 2 : Simulation Study to Understand Sampling Distribution
+
+**Part A**
+Suppose $X_1,X_2,\cdots,X_n\stackrel{iid}{\sim} Gamma(\alpha,\sigma)$, with pdf as
+$$
+f(x | \alpha,\sigma)=\frac{1}{\sigma^{\alpha}\Gamma(\alpha)}e^{- x/\sigma}x^{\alpha-1},~~~~0<x<\infty,
+$$
+The mean and variance are $E(X)=\alpha\sigma$ and $Var(X)=\alpha\sigma^2$. Note that `shape = ` $\alpha$ and `scale = ` $\sigma$.
+
+1. Write a `function` in `R` which will compute the MLE of $\theta=\log(\alpha)$ using `optim` function in `R`. You can name it `MyMLE`
+
+```{r setup, include=TRUE}
+MyMLE=function(n,shape,scale)
+{
+  n<<-n
+  Negloglike=function(data,theta)
+  {
+    
+    l=0
+    for(i in 1:n)
+    {
+      l=l+log(dgamma(data[i], theta[1],scale =theta[2]))
+      
+    }
+    return(-l)
+  }
+  
+  theta=c(0.1,0.1)
+  
+  
+  sim=rgamma(n,shape,scale)
+  data=sim
+  log(optim(par=theta,Negloglike,data=sim)$par[1])
+}
+
+```
+
+
+
+2. Choose `n=20`, and `alpha=1.5` and `sigma=2.2`
+     (i) Simulate $\{X_1,X_2,\cdots,X_n\}$ from `rgamma(n=20,shape=1.5,scale=2.2)`
+    
+```{r include=TRUE}
+rgamma(20,1.5,scale=2.2)
+```
+
+     (ii) Apply the `MyMLE` to estimate $\theta$ and append the value in a vector
+```{r warning=FALSE, include=TRUE}
+x=MyMLE(20,1.5,2.2)
+x
+```     
+     
+     
+     (iii) Repeat the step (i) and (ii) 1000 times
+```{r warning=FALSE, include=TRUE}
+for (i in 1:1000){
+  
+  x=append(x,MyMLE(20,1.5,2.2))
+}
+x
+```     
+     (iv) Draw histogram of the estimated MLEs of $\theta$.
+```{r warning=FALSE, include=TRUE}
+hist(x)
+```     
+     (v) Draw a vertical line using `abline` function at the true value of $\theta$.
+```{r warning=FALSE, include=TRUE}
+hist(x)
+abline(v=log(1.5),col="blue")
+```
+
+     (vi) Use `quantile` function on estimated $\theta$'s to find the 2.5 and 97.5-percentile points. 
+```{r warning=FALSE, include=TRUE}
+
+y=quantile(x, probs = c(.025, .975))
+y[2]-y[1]
+```
+3.  Choose `n=40`, and `alpha=1.5` and repeat the (2).
+##
+     (i) Simulate $\{X_1,X_2,\cdots,X_n\}$ from `rgamma(n=20,shape=1.5,scale=2.2)`
+    
+```{r include=TRUE}
+rgamma(40,1.5,scale=2.2)
+```
+
+     (ii) Apply the `MyMLE` to estimate $\theta$ and append the value in a vector
+```{r warning=FALSE, include=TRUE}
+x=MyMLE(40,1.5,2.2)
+x
+```     
+     
+     
+     (iii) Repeat the step (i) and (ii) 1000 times
+```{r warning=FALSE, include=TRUE}
+for (i in 1:1000){
+  
+  x=append(x,MyMLE(40,1.5,2.2))
+}
+x
+```     
+     (iv) Draw histogram of the estimated MLEs of $\theta$.
+```{r warning=FALSE, include=TRUE}
+hist(x)
+```     
+     (v) Draw a vertical line using `abline` function at the true value of $\theta$.
+```{r warning=FALSE, include=TRUE}
+hist(x)
+abline(v=log(1.5),col="blue")
+```
+
+     (vi) Use `quantile` function on estimated $\theta$'s to find the 2.5 and 97.5-percentile points. 
+```{r warning=FALSE, include=TRUE}
+
+y=quantile(x, probs = c(.025, .975))
+y[2]-y[1]
+```
+##
+4.  Choose `n=100`, and `alpha=1.5` and repeat the (2).
+     (i) Simulate $\{X_1,X_2,\cdots,X_n\}$ from `rgamma(n=20,shape=1.5,scale=2.2)`
+    
+```{r include=TRUE}
+rgamma(100,1.5,scale=2.2)
+```
+
+     (ii) Apply the `MyMLE` to estimate $\theta$ and append the value in a vector
+```{r warning=FALSE, include=TRUE}
+x=MyMLE(100,1.5,2.2)
+x
+```     
+     
+     
+     (iii) Repeat the step (i) and (ii) 1000 times
+```{r warning=FALSE, include=TRUE}
+for (i in 1:1000){
+  
+  x=append(x,MyMLE(100,1.5,2.2))
+}
+x
+```     
+     (iv) Draw histogram of the estimated MLEs of $\theta$.
+```{r warning=FALSE, include=TRUE}
+hist(x)
+```     
+     (v) Draw a vertical line using `abline` function at the true value of $\theta$.
+```{r warning=FALSE, include=TRUE}
+hist(x)
+abline(v=log(1.5),col="blue")
+```
+
+     (vi) Use `quantile` function on estimated $\theta$'s to find the 2.5 and 97.5-percentile points. 
+```{r warning=FALSE, include=TRUE}
+
+y=quantile(x, probs = c(.025, .975))
+y[2]-y[1]
+```
+
+5. Check if the gap between 2.5 and 97.5-percentile points are shrinking as sample size `n` is increasing?
+```{r warning=FALSE, include=TRUE}
+
+#Yes, It does.
+```
+
+*Hint*: Perhaps you should think of writing a single `function` where you will provide the values of `n`, `sim_size`, `alpha` and `sigma`; and it will return the desired output. 
+
+\newpage
+
+
+## Problem 4: Modelling Insurance Claims
+
+Consider the `Insurance` datasets in the `MASS` package. The data given in data frame `Insurance` consist of the numbers of policyholders of an insurance company who were exposed to risk, and the numbers of car insurance claims made by those policyholders in the third quarter of 1973.
+
+This data frame contains the following columns:
+
+`District` (factor): district of residence of policyholder (1 to 4): 4 is major cities.
+
+`Group` (an ordered factor): group of car with levels <1 litre, 1–1.5 litre, 1.5–2 litre, >2 litre.
+
+`Age` (an ordered factor): the age of the insured in 4 groups labelled <25, 25–29, 30–35, >35.
+
+`Holders` : numbers of policyholders.
+
+`Claims` : numbers of claims
+
+```{r}
+library(MASS)
+plot(Insurance$Holders,Insurance$Claims
+     ,xlab = 'Holders',ylab='Claims',pch=20)
+grid()
+```
+
+**Note**: If you use built-in function like `lm` or any packages then no points will be awarded.
+
+**Part A**: We want to predict the `Claims` as function of `Holders`. So we want to fit the following models:
+$$
+\texttt{Claims}_i=\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
+$$
+*Assume* : $\varepsilon_i\sim N(0,\sigma^2)$. Note that $\beta_0,\beta_1 \in\mathbb{R}$ and $\sigma \in \mathbb{R}^{+}$.
+
+The above model can alse be re-expressed as,
+$$
+\texttt{Claims}_i\sim N(\mu_i,\sigma^2),~~where
+$$
+$$
+\mu_i =\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
+$$
+
+
+(i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\beta_0,\beta_1,\sigma)$
+
+
+
+```{r warning=FALSE, include=TRUE}
+
+library(SciViews)
+library(MASS)
+
+```
+
+```{r warning=FALSE, include=TRUE}
+
+
+library(jmuOutlier)
+Holders=Insurance$Holders
+Claims=Insurance$Claims
+data=data.frame(cbind(Claims,Holders))
+data=data[-61,]
+n=length(Holders)-1
+
+y=data[,1]
+x=data[,2]
+
+
+```
+
+```{r warning=FALSE, include=TRUE}
+
 Negloglike=function(data,theta)
 {
-  
   l=0
   for(i in 1:n)
   {
-    l=l+log(dgamma(data[i], theta[1],scale =theta[2]))
+    l=l+log(dnorm(y[i], theta[1]+theta[2]*x[i],theta[3]))
     
   }
   return(-l)
 }
 
+theta=c(0.1,0.1,50)
+fit=optim(theta,Negloglike,data=data)
+##Estimated value of theta is:
 
-theta=c(0.1,0.1)
-fit=optim(par=theta,Negloglike,data=sim)
-fit
+c(fit$par[1],fit$par[2],fit$par[3])
 
-######   1
+```
 
-MyMLE=function()
+
+(ii) Calculate **Bayesian Information Criterion** (BIC) for the model.
+
+
+```{r warning=FALSE, include=TRUE}
+BIC_A=ln(n)*(length(fit$par))+2*fit$value
+#BIC value is:
+BIC_A
+
+```
+
+**Part B**: Now we want to fit the same model with change in distribution:
+$$
+\texttt{Claims}_i=\beta_0 + \beta_1~\texttt{Holders}_i + \varepsilon_i,~~~i=1,2,\cdots,n
+$$
+  Assume : $\varepsilon_i\sim Laplace(0,\sigma^2)$. Note that $\beta_0,\beta_1 \in\mathbb{R}$ and $\sigma \in \mathbb{R}^{+}$.
+
+(i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\beta_0,\beta_1,\sigma)$
+
+
+
+```{r warning=FALSE, include=TRUE}
+
+
+Negloglike=function(data,theta)
 {
-  log(optim(par=theta,Negloglike,data=sim)$par[1])
+  l=0
+  for(i in 1:n)
+  {
+    l=l+log(dlaplace(y[i], theta[1]+theta[2]*x[i],theta[3]))
+    
+  }
+  return(-l)
 }
 
-  
-MyMLE()
-  
-  
+theta=c(0.1,0.1,50)
+fit=optim(theta,Negloglike,data=data)
+##Estimated value of theta is:
 
+c(fit$par[1],fit$par[2],fit$par[3])
+
+```
+
+
+(ii) Calculate **Bayesian Information Criterion** (BIC) for the model.
+
+
+
+```{r warning=FALSE, include=TRUE}
+
+BIC_B=ln(n)*(length(fit$par))+2*fit$value
+#BIC value is:
+BIC_B
+```
+
+**Part C**: We want to fit the following models:
+$$
+\texttt{Claims}_i\sim LogNormal(\mu_i,\sigma^2), where
+$$
+$$
+\mu_i=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
+$$
+
+Note that $\beta_0,\beta_1 \in\mathbb{R}$ and $\sigma \in \mathbb{R}^{+}$.
+
+(i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\alpha,\beta,\sigma)$
+
+
+
+```{r warning=FALSE, include=TRUE}
+
+Negloglike=function(data,theta)
+{
+  l=0
+  for(i in 1:n)
+  {
+    l=l+log(dlnorm(y[i], theta[1]+theta[2]*log(x[i]),theta[3]))
+    
+  }
+  return(-l)
+}
+
+theta=c(0.1,0.1,1)
+fit=optim(theta,Negloglike,data=data)
+##Estimated value of theta is:
+
+c(fit$par[1],fit$par[2],fit$par[3])
+
+```
+
+(ii) Calculate **Bayesian Information Criterion** (BIC) for the model.
+
+```{r warning=FALSE, include=TRUE}
+BIC_C=ln(n)*(length(fit$par))+2*fit$value
+#BIC value is:
+BIC_C
+
+```
+
+
+
+
+**Part D**: We want to fit the following models:
+$$
+\texttt{Claims}_i\sim Gamma(\alpha_i,\sigma), where
+$$
+$$
+log(\alpha_i)=\beta_0 + \beta_1 \log(\texttt{Holders}_i), ~~i=1,2,...,n
+$$
+
+(i) Clearly write down the negative-log-likelihood function in `R`. Then use `optim` function to estimate MLE of $\theta=(\alpha,\beta,\sigma)$
+
+
+
+```{r warning=FALSE, include=TRUE}
+
+e=2.718281828459045
+Negloglike=function(data,theta)
+{
+  l=0
+  for(i in 1:n)
+  {
+    l=l+log(dgamma(y[i], e^(theta[1]+theta[2]*log(x[i])),theta[3]))
+    
+  }
+  return(-l)
+}
+
+theta=c(0.1,0.1,0.1)
+fit=optim(theta,Negloglike,data=data)
+
+##Estimated value of theta is:
+
+c(fit$par[1],fit$par[2],fit$par[3])
 
 
 ```
 
+(ii) Calculate **Bayesian Information Criterion** (BIC) for the model.
+
+
+
+```{r warning=FALSE, include=TRUE}
+
+BIC_D=ln(n)*(length(fit$par))+2*fit$value
+#BIC value is:
+BIC_D
+```
+
+
+(iii) Compare the BIC of all three models
+```{r warning=FALSE, include=TRUE}
+c(BIC_A,BIC_B,BIC_C,BIC_D)
+```
+#
