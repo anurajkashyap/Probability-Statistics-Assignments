@@ -65,7 +65,7 @@ for (i in 1:1000){
   
   x=append(x,MyMLE(20,1.5,2.2))
 }
-x
+
 ```     
      (iv) Draw histogram of the estimated MLEs of $\theta$.
 ```{r warning=FALSE, include=TRUE}
@@ -81,7 +81,7 @@ abline(v=log(1.5),col="blue")
 ```{r warning=FALSE, include=TRUE}
 
 y=quantile(x, probs = c(.025, .975))
-y[2]-y[1]
+y
 ```
 3.  Choose `n=40`, and `alpha=1.5` and repeat the (2).
 ##
@@ -104,7 +104,7 @@ for (i in 1:1000){
   
   x=append(x,MyMLE(40,1.5,2.2))
 }
-x
+
 ```     
      (iv) Draw histogram of the estimated MLEs of $\theta$.
 ```{r warning=FALSE, include=TRUE}
@@ -120,7 +120,7 @@ abline(v=log(1.5),col="blue")
 ```{r warning=FALSE, include=TRUE}
 
 y=quantile(x, probs = c(.025, .975))
-y[2]-y[1]
+y
 ```
 ##
 4.  Choose `n=100`, and `alpha=1.5` and repeat the (2).
@@ -143,7 +143,7 @@ for (i in 1:1000){
   
   x=append(x,MyMLE(100,1.5,2.2))
 }
-x
+
 ```     
      (iv) Draw histogram of the estimated MLEs of $\theta$.
 ```{r warning=FALSE, include=TRUE}
@@ -159,7 +159,7 @@ abline(v=log(1.5),col="blue")
 ```{r warning=FALSE, include=TRUE}
 
 y=quantile(x, probs = c(.025, .975))
-y[2]-y[1]
+y
 ```
 
 5. Check if the gap between 2.5 and 97.5-percentile points are shrinking as sample size `n` is increasing?
